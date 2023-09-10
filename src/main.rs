@@ -1,4 +1,5 @@
 use std::env;
+use std::path::Path;
 use serde::{Deserialize, Serialize};
 use std::fs::File;
 use std::io::Write;
@@ -28,11 +29,12 @@ fn main() {
     let args_lv1 = &args[1];
     match args_lv1.as_str() {
         "init" => {
+
             let json_string = r#"
             {
                 "_meta": {
                     "_init_date": "",
-                    "_db_type": ""
+                    "_db_type": "postgresql"
                 },
                 "_data" : {
                     "_changes" : ""
@@ -43,9 +45,15 @@ fn main() {
 
        
             let json_string = serde_json::to_string(&parsed_file).expect("Failed to serialize to JSON");
-            println!("{}", json_string);
-            let mut file = File::create("output.json").expect("Failed to create file");
-            file.write_all(json_string.as_bytes()).expect("Failed to write to file");
+            let path = Path::new("dbit.conf.json");
+            if path.exists() {
+                println!("Already initialized!");
+            }
+            else{
+                let mut file = File::create(path).expect("Failed to create file");
+                file.write_all(json_string.as_bytes()).expect("Failed to write to file");
+            
+            }
             
         }
         
